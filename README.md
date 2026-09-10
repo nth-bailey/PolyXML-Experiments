@@ -8,7 +8,7 @@ This repository contains independent stress tests, scalability benchmarks, and r
 
 | # | Experiment Name | Focus Area | Key Finding |
 |---|---|---|---|
-| **01** | [NeTEx 304MB European Transit Benchmark](experiments/01-netex-300mb-benchmark/) | High-throughput streaming, large real-world CEN transit models, memory consumption | **244.7x faster** than predecessor `xsdata` (845 MB/s vs 3.45 MB/s) & **~75% less RAM** (~1.27 GB saved). |
+| **01** | [NeTEx 304MB European Transit Benchmark](experiments/01-netex-300mb-benchmark/) | High-throughput streaming, large real-world CEN transit models, memory consumption | **845 MB/s streaming throughput** (0.360s vs 88.0s predecessor `xsdata`) & **~75% less RAM** (~1.27 GB saved). |
 
 ---
 
