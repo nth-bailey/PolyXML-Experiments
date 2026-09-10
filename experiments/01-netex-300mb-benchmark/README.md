@@ -3,20 +3,25 @@
 ## Objective & Background
 This benchmark tests the performance, scalability, and memory consumption of the native **PolyXML** engine against standard pure-Python XML binding libraries on massive, highly complex XML data structures.
 
+The test compares:
+1. **PolyXML Native Engine** (`CoreXmlParser` / `polyxml` v0.3.0 in Rust)
+2. **pyxsdata** (v1.4.0 pure-Python streaming `XmlParser`)
+3. **xsdata Predecessor** (v26.2 original pure-Python `XmlParser`)
+
 The test was conducted using:
 1. **Schema**: The European Committee for Standardization (CEN) **NeTEx v2.0** Technical Standard ([CEN/TS 16614](https://netex-cen.eu/)), starting from [`NeTEx_publication.xsd`](https://github.com/TransmodelEcosystem/NeTEx/blob/v2.0/xsd/NeTEx_publication.xsd).
 2. **Dataset**: A **303.92 MB** national timetable publication dump from the Dutch National Public Transport Data Portal (NDOV Loket / Arriva NL): `NeTEx_ARR_NL_20260909_20260909_1407.xml`.
 
 ---
 
-## Benchmark Results
+## 3-Way Benchmark Results
 
-| Metric | PolyXML Native Engine (`CoreXmlParser`) | Standard `pyxsdata` (`XmlParser`) | Delta / Improvement |
-|:---|:---:|:---:|:---:|
-| **Parse Time** | **0.463 seconds** | **93.565 seconds** | **202.1x FASTER** :rocket: |
-| **Throughput** | **656.53 MB/s** | **3.25 MB/s** | **~200x Higher Bandwidth** |
-| **Peak RAM (RSS)** | **442.21 MB** | **1,718.59 MB** | **~74% Less Memory** |
-| **Data Integrity** | :white_check_mark: Full Extraction | :white_check_mark: Full Extraction | Identical Output |
+| Metric | PolyXML Native Engine (`CoreXmlParser`) | `pyxsdata` (`XmlParser`) | Predecessor `xsdata` (`XmlParser`) | Improvement vs Predecessor (`xsdata`) |
+|:---|:---:|:---:|:---:|:---:|
+| **Parse Time** | **0.360 seconds** | **70.557 seconds** | **88.004 seconds** | **244.7x FASTER** :rocket: |
+| **Throughput** | **845.18 MB/s** | **4.31 MB/s** | **3.45 MB/s** | **~245x Higher Bandwidth** |
+| **Peak RAM (RSS)** | **432.89 MB** | **1,703.96 MB** | **1,703.96 MB** | **~75% Less Memory** (~1.27 GB saved) |
+| **Data Integrity** | :white_check_mark: Full Extraction | :white_check_mark: Full Extraction | :white_check_mark: Full Extraction | Identical Output |
 
 ---
 
@@ -26,9 +31,10 @@ The test was conducted using:
 - **RAM**: 8 GB
 - **Operating System**: Linux x86_64 (Kernel 6.6.x)
 - **Python Runtime**: CPython 3.12.14
-- **Libraries**:
+- **Libraries Tested**:
   - `polyxml` v0.3.0 (`quick-xml` 0.37.5, `pyo3` 0.23.5)
   - `pyxsdata` v1.4.0
+  - `xsdata` v26.2
 
 ---
 
@@ -46,14 +52,14 @@ The test was conducted using:
 
 ---
 
-## Why PolyXML Achieves 200x Performance
+## Why PolyXML Achieves 245x Performance
 
 1. **Streaming Token Extraction without DOM Allocation**:
-   Standard parsers construct an intermediate DOM or Python element dictionary before instantiating target classes. PolyXML uses pure Rust streaming events (`quick-xml`) with SIMD-accelerated delimiter scanning.
+   Both `xsdata` and standard `pyxsdata` construct Python element queues and intermediate dictionaries before instantiating target classes. PolyXML uses pure Rust streaming events (`quick-xml`) with SIMD-accelerated delimiter scanning.
 2. **Zero-Allocation Byte Conversions**:
    Numerical fields (timestamps, delays, sequence indices, coordinates) are parsed directly from raw UTF-8 byte slices using `lexical-core`, bypassing Python string allocation.
 3. **Direct PyO3 Constructor Invocations**:
-   Target Python dataclass instances are constructed directly from Rust using PyO3 0.23 `Bound` APIs without intermediate dictionary overhead, drastically cutting garbage collection pressure and reducing peak RSS by ~1.3 GB.
+   Target Python dataclass instances are constructed directly from Rust using PyO3 0.23 `Bound` APIs without intermediate dictionary overhead, drastically cutting garbage collection pressure and reducing peak RSS by ~1.27 GB.
 
 ---
 
@@ -74,5 +80,6 @@ pip install -r requirements.txt
 wget https://data.ndovloket.nl/netex/arr/NeTEx_ARR_NL_20260909_20260909_1407.xml.gz
 gunzip NeTEx_ARR_NL_20260909_20260909_1407.xml.gz
 
-python run_benchmark.py --xml NeTEx_ARR_NL_20260909_20260909_1407.xml
+# Run 3-way benchmark
+python run_benchmark.py --xml NeTEx_ARR_NL_20260909_20260909_1407.xml --compare-xsdata
 ```

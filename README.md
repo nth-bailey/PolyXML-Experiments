@@ -8,7 +8,7 @@ This repository contains independent stress tests, scalability benchmarks, and r
 
 | # | Experiment Name | Focus Area | Key Finding |
 |---|---|---|---|
-| **01** | [NeTEx 304MB European Transit Benchmark](experiments/01-netex-300mb-benchmark/) | High-throughput streaming, large real-world CEN transit models, memory consumption | **202.1x faster** (656.5 MB/s vs 3.25 MB/s) & **74% less RAM** than standard pure-Python parsers. |
+| **01** | [NeTEx 304MB European Transit Benchmark](experiments/01-netex-300mb-benchmark/) | High-throughput streaming, large real-world CEN transit models, memory consumption | **244.7x faster** than predecessor `xsdata` (845 MB/s vs 3.45 MB/s) & **~75% less RAM** (~1.27 GB saved). |
 
 ---
 
