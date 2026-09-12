@@ -18,6 +18,7 @@ from serializers import (
     CloudPickleSerializer,
     Pickle5Serializer,
     MsgspecSerializer,
+    PolyXMLBinarySerializer,
     PipelineSerializer,
     Lz4Codec,
     ObjectSerializer,
@@ -37,7 +38,9 @@ def benchmark_pure_serialization(stops: List[ScheduledStopPoint]) -> List[Dict[s
         ("Msgspec (Tagged) + LZ4", PipelineSerializer(MsgspecSerializer(), [Lz4Codec()])),
         ("Msgspec (Typed Direct) + LZ4", PipelineSerializer(MsgspecSerializer(target_type=ScheduledStopPoint), [Lz4Codec()])),
         ("Msgspec (Typed Raw, No LZ4)", MsgspecSerializer(target_type=ScheduledStopPoint)),
+        ("PolyXML Binary (Typed Direct) + LZ4", PipelineSerializer(PolyXMLBinarySerializer(target_type=ScheduledStopPoint), [Lz4Codec()])),
     ]
+
 
     results = []
 
@@ -90,7 +93,9 @@ def benchmark_mdbx_storage(stops: List[ScheduledStopPoint]) -> List[Dict[str, An
         ("CloudPickle + LZ4 (Badger production)", PipelineSerializer(CloudPickleSerializer(), [Lz4Codec()])),
         ("Msgspec (Tagged) + LZ4", PipelineSerializer(MsgspecSerializer(), [Lz4Codec()])),
         ("Msgspec (Typed) + LZ4", PipelineSerializer(MsgspecSerializer(target_type=ScheduledStopPoint), [Lz4Codec()])),
+        ("PolyXML Binary (Typed) + LZ4", PipelineSerializer(PolyXMLBinarySerializer(target_type=ScheduledStopPoint), [Lz4Codec()])),
     ]
+
 
     results = []
 

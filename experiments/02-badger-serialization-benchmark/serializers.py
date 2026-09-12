@@ -155,3 +155,20 @@ class MsgspecSerializer(ObjectSerializer):
                     dec_hook=self._dec_hook,
                 )
         return msgspec.msgpack.decode(payload, dec_hook=self._dec_hook)
+
+
+class PolyXMLBinarySerializer(ObjectSerializer):
+    """Direct PolyXML binary serialization wrapper using polyxml.dumps_binary and polyxml.loads_binary."""
+
+    def __init__(self, target_type: Optional[Type[Any]] = None):
+        self._target_type = target_type
+
+    def dumps(self, obj: Any) -> bytes:
+        import polyxml
+        return polyxml.dumps_binary(obj)
+
+    def loads(self, data: bytes) -> Any:
+        import polyxml
+        return polyxml.loads_binary(data, target_type=self._target_type)
+
+
